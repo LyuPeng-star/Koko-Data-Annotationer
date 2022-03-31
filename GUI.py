@@ -31,21 +31,21 @@ class ScrollMessageBox(QMessageBox):
 
 class myVideoSlider(QSlider):
     ClickedValue = pyqtSignal(int)
-    def mousePressEvent(self, QMouseEvent):  # 单击事件
+    def mousePressEvent(self, QMouseEvent):
         super().mousePressEvent(QMouseEvent)
         value = QMouseEvent.localPos().x()
         # self.setValue(int(value)/9)
-        value = round(value / self.width() * self.maximum())  # 根据鼠标点击的位置和slider的长度算出百分比
+        value = round(value / self.width() * self.maximum())
         self.ClickedValue.emit(value)
 
 class myVideoWidget(QVideoWidget):
-    doubleClickedItem = pyqtSignal(str)  # 创建双击信号
+    doubleClickedItem = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(QVideoWidget, self).__init__(parent)
 
 
-    def mouseDoubleClickEvent(self, QMouseEvent):     #双击事件
+    def mouseDoubleClickEvent(self, QMouseEvent):
         self.doubleClickedItem.emit("double clicked")
 
 class Ui_MainWindow(object):
