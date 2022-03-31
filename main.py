@@ -13,7 +13,7 @@ from GUI import *
 
 
 class myMainWindow(Ui_MainWindow, QMainWindow):
-    cap_finish = pyqtSignal()  # 截图完成信号
+    cap_finish = pyqtSignal()
 
     def __init__(self):
         super(Ui_MainWindow, self).__init__()
@@ -26,11 +26,11 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
         self.chicken_df = None
         self.j_df = None
         self.numList = None
-        self.__duration = ""  # 文件总时间长度
-        self.__curPos = ""  # 当前播放到位置
+        self.__duration = ""
+        self.__curPos = ""
         self.vSld_pressed = False
-        self.videoFullScreen = False  # 判断当前widget是否全屏
-        self.videoFullScreenWidget = myVideoWidget()  # 创建一个全屏的widget
+        self.videoFullScreen = False
+        self.videoFullScreenWidget = myVideoWidget()
         self.player = QMediaPlayer()
         self.playlist = QMediaPlaylist()
         self.player.setPlaylist(self.playlist)
@@ -59,8 +59,8 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
         self.sxBtn.clicked.connect(self.sxBtn_clicked)
         self.clBtn.clicked.connect(self.clBtn_clicked)
         self.player.positionChanged.connect(self.changeSlide)
-        self.videoFullScreenWidget.doubleClickedItem.connect(self.videoDoubleClicked)  # 双击响应
-        self.vPly.doubleClickedItem.connect(self.videoDoubleClicked)  # 双击响应
+        self.videoFullScreenWidget.doubleClickedItem.connect(self.videoDoubleClicked)
+        self.vPly.doubleClickedItem.connect(self.videoDoubleClicked)
         self.vSld.setTracking(False)
         self.vSld.sliderReleased.connect(self.releaseSlider)
         self.vSld.sliderPressed.connect(self.pressSlider)
@@ -70,14 +70,10 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
         self.vLst.setStyle(QStyleFactory.create('windows'))
 
     def openfolder(self):
-        '''打开系统文件资源管理器的对应文件夹'''
         # import os
         folder = r'D:'
-        # 方法1：通过start explorer
         # os.system("start explorer %s" % folder)
-        # 方法2：通过startfile
         os.startfile(folder)
-        # print("测试！")
 
     def sxBtn_clicked(self):
         if self.datafile_choose is None:
@@ -252,29 +248,27 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
         print('1分钟1张')
 
     def qqBtn_clicked(self):
-        self.playlist.clear()  # 清空播放列表
+        self.playlist.clear()
         self.vLst.clear()
         self.player.stop()
 
     def xsBtn_clicked(self):
         pos = self.vLst.currentRow()
-        item = self.vLst.takeItem(pos)  # python会自动删除
+        item = self.vLst.takeItem(pos)
 
-        if (self.playlist.currentIndex() == pos):  # 是当前播放的曲目
+        if (self.playlist.currentIndex() == pos):
             nextPos = 0
             if pos >= 1:
                 nextPos = pos - 1
-                self.playlist.removeMedia(pos)  # 从播放列表里移除
-                if self.vLst.count() > 0:  # 剩余个数
+                self.playlist.removeMedia(pos)
+                if self.vLst.count() > 0:
                     self.playlist.setCurrentIndex(nextPos)
-                    self.do_currentChanged(nextPos)  # 当前曲目变化
+                    self.do_currentChanged(nextPos)
                 else:
                     self.player.stop()
                     self.vLst.LabCurMedia.setText("无曲目")
             else:
                 self.playlist.removeMedia(pos)
-
-    ##   @pyqtSlot()    ##双击时切换播放文件
 
     def on_listWidget_doubleClicked(self, index):
         rowNo = index.row()  # 行号
@@ -285,7 +279,6 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
         print("on_btnPrevious_clicked")
         self.playlist.previous()
 
-    ##下一曲目
     def teBtn_clicked(self):
         print("on_btnNext_clicked")
         self.playlist.next()
@@ -301,7 +294,7 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
         self.ysLab.setText("현재 볼륨:" + str(volume) + "%")
 
     def clickedSlider(self, position):
-        if self.player.duration() > 0:  # 开始播放后才允许进行跳转
+        if self.player.duration() > 0:
             video_position = int((position / 100) * self.player.duration())
             self.player.setPosition(video_position)
             self.vsLab.setText("현재 진행률:" + "%.2f%%" % position)
@@ -310,7 +303,7 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
 
     def moveSlider(self, position):
         self.vSld_pressed = True
-        if self.player.duration() > 0:  # 开始播放后才允许进行跳转
+        if self.player.duration() > 0:
             video_position = int((position / 100) * self.player.duration())
             self.player.setPosition(video_position)
             self.vsLab.setText("현재 진행률:" + "%.2f%%" % position)
@@ -323,7 +316,7 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
         self.vSld_pressed = False
 
     def changeSlide(self, position):
-        if not self.vSld_pressed:  # 进度条被鼠标点击时不更新
+        if not self.vSld_pressed:
             self.vidoeLength = self.player.duration() + 0.1
             self.vSld.setValue(round((position / self.vidoeLength) * 100))
             self.vsLab.setText("현재 진행률:" + "%.2f%%" % ((position / self.vidoeLength) * 100))
@@ -353,25 +346,8 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
         self.player.setVolume(0)
         # self.player.isMuted()
 
-    # def voBtn_clicked(self):
-    #     # QtWidgets.QMessageBox.information(self.voBtn, "标题", "这是一个打开视频文件的按钮！")
-    #     # absolute_path is a QString object
-    #     # cwd = os.getcwd()  # 获取当前程序文件位置
-    #     videofile_choose, videotype_choose = QFileDialog.getOpenFileName(self,
-    #                                                             '비디오 파일 선택',
-    #                                                             './',  # 起始路径
-    #                                                             'All Video Files (*);;*.mp4;;*.avi;;*.mov;;*.mkv')  # 设置文件扩展名过滤,用双分号间隔
-    #     if videofile_choose == "":
-    #         print("\n取消选择")
-    #         return
-    #     print("\n你选择的文件为:")
-    #     print(videofile_choose)
-    #     print("文件筛选器类型: ", videotype_choose)
-    #     self.player.setMedia(QMediaContent(QUrl(videofile_choose)))
-    #     print(self.player.availableMetaData())
-
     def on_btnAdd_clicked(self):
-        ##      curPath=os.getcwd()     #获取系统当前目录
+        ##      curPath=os.getcwd()
         ##      curPath=QDir.homePath()
 
         cur_path = os.path.abspath(__file__)
@@ -387,17 +363,16 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
             return
 
         filename = self.fileList[0]
-        fileInfo = QFileInfo(filename)  # 文件信息
-        QDir.setCurrent(fileInfo.absolutePath())  # 重设当前路径
+        fileInfo = QFileInfo(filename)
+        QDir.setCurrent(fileInfo.absolutePath())
 
         for i in range(count):
             filename = self.fileList[i]
             fileInfo.setFile(filename)
             video = QMediaContent(QUrl.fromLocalFile(filename))
-            self.playlist.addMedia(video)  # 添加播放媒体
-            ##         basename=os.path.basename(filename)    #文件名和后缀
+            self.playlist.addMedia(video)
             basename = fileInfo.baseName()
-            self.vLst.addItem(basename)  # 添加到界面文件列表
+            self.vLst.addItem(basename)
 
         if (self.player.state() != QMediaPlayer.PlayingState):
             self.playlist.setCurrentIndex(0)
@@ -597,8 +572,8 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
                 vopen = cap.open(filepath)
                 if not vopen:
                     print("打开第{}个视频失败！".format(filepathes.index(filepath) + 1))
-                # v_file = cv2.VideoCapture(v_path)  # 读入视频文件
-                fps = round(cap.get(cv2.CAP_PROP_FPS))  # 视频帧计数间隔频率
+                # v_file = cv2.VideoCapture(v_path)
+                fps = round(cap.get(cv2.CAP_PROP_FPS))
                 jfps = fps * self.jg
                 print('当前截图帧率：', jfps)
                 # size = (round(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
@@ -721,7 +696,7 @@ class myMainWindow(Ui_MainWindow, QMainWindow):
 
     def videoDoubleClicked(self, text):
 
-        if self.player.duration() > 0:  # 开始播放后才允许进行全屏操作
+        if self.player.duration() > 0:
             if self.videoFullScreen:
                 self.player.setVideoOutput(self.vPly)
                 self.videoFullScreenWidget.hide()
